@@ -1,0 +1,1235 @@
+.historyPage {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.historyTitle {
+  font-size: 2rem;
+  color: var(--primary-blue);
+  font-weight: 700;
+  margin: 0;
+  background: linear-gradient(90deg, var(--primary-blue), var(--dark-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  color: var(--primary-blue);
+  background-color: transparent;
+  border: 1px solid var(--primary-blue);
+  border-radius: 50px;
+  padding: 10px 20px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.backButton svg {
+  margin-right: 8px;
+}
+
+.backButton:hover {
+  background-color: var(--primary-blue);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+}
+
+.historyContent {
+  margin-top: 20px;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.historyCard {
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px var(--shadow);
+  transition: all 0.3s ease;
+  padding: 25px;
+  border: 1px solid rgba(144, 202, 249, 0.1);
+}
+
+.historyCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 35px var(--shadow);
+}
+
+.historyCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.dateSection {
+  flex: 1;
+}
+
+.itemDate {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.itemSymptoms {
+  margin: 0 0 20px 0;
+  color: var(--text-primary);
+  font-size: 1.3rem;
+  font-weight: 600;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.1);
+}
+
+.severityBadge {
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sectionTitle {
+  color: var(--primary-blue);
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+
+/* Care Advice Section */
+.careAdviceSection {
+  margin-bottom: 20px;
+}
+
+.careAdviceSection .sectionTitle {
+  color: #2196F3;
+  font-size: 1.3rem;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+}
+
+.escalationCard {
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f7f9f7;
+  border-left: 4px solid var(--success-green);
+}
+
+.escalationCard.urgent {
+  background-color: rgba(229, 57, 53, 0.05);
+  border-left: 4px solid var(--error-red);
+}
+
+.escalationCard.soon {
+  background-color: rgba(255, 152, 0, 0.05);
+  border-left: 4px solid #FF9800;
+}
+
+.escalationCard.routine {
+  background-color: rgba(67, 160, 71, 0.05);
+  border-left: 4px solid var(--success-green);
+}
+
+.escalationTitle {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.escalationMessage {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Conditions Section */
+.conditionsSection {
+  margin-bottom: 20px;
+}
+
+.conditionsPreview {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.conditionPreviewItem {
+  padding: 12px 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.conditionPreviewItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.moreConditions {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* Medications Section */
+.medicationsSection {
+  margin-bottom: 20px;
+}
+
+.medicationsPreview {
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.medicationsPreview p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.medicationPreviewItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.1);
+}
+
+.medicationPreviewItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.medicationDetail {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.moreMedications {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+/* Recommendations Section */
+.recommendationsSection {
+  margin-bottom: 20px;
+}
+
+.recommendationPreview {
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.recommendationPreview p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.recommendationHighlights {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.recommendationItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.recommendationKey {
+  font-weight: 600;
+  color: var(--primary-blue);
+}
+
+/* Card Actions */
+.cardActions {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 25px;
+  border-top: 1px solid rgba(144, 202, 249, 0.1);
+  padding-top: 20px;
+}
+
+.expandButton {
+  background: none;
+  border: 1px solid var(--primary-blue);
+  color: var(--primary-blue);
+  border-radius: 50px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expandButton:hover {
+  background-color: rgba(30, 136, 229, 0.1);
+  transform: translateY(-2px);
+}
+
+.newCheckButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+  min-width: 200px;
+}
+
+.newCheckButton:hover {
+  background-color: var(--dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px var(--shadow);
+}
+
+.emptyStateIcon {
+  color: var(--primary-blue);
+  opacity: 0.6;
+  margin-bottom: 20px;
+}
+
+.emptyState h3 {
+  font-size: 1.4rem;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.emptyState p {
+  color: var(--text-secondary);
+  margin-bottom: 25px;
+}
+
+.actionButton {
+  display: inline-block;
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+}
+
+.actionButton:hover {
+  background-color: var(--dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px var(--shadow);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(30, 136, 229, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary-blue);
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 20px;
+}
+
+.loadingContainer p {
+  color: var(--text-secondary);
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 30px var(--shadow);
+  border-left: 4px solid var(--error-red);
+}
+
+.errorMessage p {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Background animations */
+.backgroundAnimations {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.animatedCircle {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(144, 202, 249, 0.15) 0%, rgba(144, 202, 249, 0) 70%);
+  animation: pulse 8s infinite ease-in-out;
+  opacity: 0.6;
+}
+
+.animatedPulse {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgba(30, 136, 229, 0.2);
+  animation: ripple 4s infinite ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0.1);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(3);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .historyHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .historyTitle {
+    font-size: 1.6rem;
+  }
+  
+  .backButton {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .historyItemHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .itemActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 480px) {
+  .historyPage {
+    padding: 15px;
+  }
+  
+  .historyTitle {
+    font-size: 1.4rem;
+  }
+  
+  .conditionItem {
+    padding: 12px;
+  }
+  
+  .escalationCard {
+    padding: 12px;
+  }
+  
+  .escalationHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .newCheckButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Medications styles */
+.medications {
+  margin-bottom: 30px;
+}
+
+.medicationsList {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.medicationItem {
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.medicationItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.medicationName {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--primary-blue);
+  margin-bottom: 8px;
+}
+
+.medicationDosage {
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin: 5px 0;
+  font-size: 0.95rem;
+}
+
+.medicationInstructions {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: 8px 0 5px;
+}
+
+/* Recommendation styles */
+.recommendationItem {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.1);
+}
+
+.recommendationItem:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.recommendationItem h5 {
+  color: var(--primary-blue);
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+}
+
+/* Additional info styles */
+.additionalInfo {
+  margin-bottom: 30px;
+}
+
+.additionalInfoContent {
+  padding: 15px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.additionalInfoContent p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Expanded Details Section */
+.historyItemDetails {
+  padding: 20px;
+  margin-top: 20px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(144, 202, 249, 0.1);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+    transform: translateY(0);
+  }
+}
+
+.historyItemDetails h4 {
+  color: var(--primary-blue);
+  font-size: 1.2rem;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.historyItemDetails > div {
+  margin-bottom: 30px;
+}
+
+.historyItemDetails > div:last-child {
+  margin-bottom: 10px;
+}
+
+/* Condition styles */
+.conditionsList {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 15px;
+}
+
+.conditionItem {
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.conditionItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.conditionName {
+  display: block;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--primary-blue);
+  margin-bottom: 8px;
+}
+
+.conditionDescription {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.nhsLink {
+  display: inline-block;
+  color: var(--primary-blue);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: color 0.3s ease;
+}
+
+.nhsLink:hover {
+  color: var(--dark-blue);
+  text-decoration: underline;
+}
+
+/* Colors for severity badges */
+.urgent {
+  background-color: var(--error-red);
+  color: white;
+}
+
+.soon {
+  background-color: #FF9800;
+  color: white;
+}
+
+.routine {
+  background-color: var(--success-green);
+  color: white;
+}
+
+/* Recommendation content */
+.recommendationContent {
+  padding: 15px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+/* Debug section */
+.debugSection {
+  margin-bottom: 30px;
+  background-color: rgba(17, 24, 39, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.debugSection h4 {
+  color: #1976d2;
+  padding: 15px 20px;
+  background-color: rgba(30, 136, 229, 0.07);
+  margin: 0;
+  font-size: 16px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.debugContent {
+  padding: 0;
+  overflow-x: auto;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: rgb(251, 252, 253);
+}
+
+.prettyJson {
+  margin: 0;
+  padding: 20px;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+  white-space: pre-wrap;
+  background-color: rgb(251, 252, 253);
+}
+
+.prettyJson::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.prettyJson::-webkit-scrollbar-thumb {
+  background-color: rgba(30, 136, 229, 0.3);
+  border-radius: 4px;
+}
+
+.prettyJson::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* JSON Display styling */
+.jsonDisplay {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 5px;
+  color: #33374e;
+}
+
+.jsonSection {
+  margin-bottom: 16px;
+  background-color: rgba(30, 136, 229, 0.04);
+  border-radius: 8px;
+  padding: 12px;
+  border-left: 4px solid rgba(30, 136, 229, 0.5);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.jsonSection:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.jsonKey {
+  color: #1976d2;
+  font-weight: 700;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.jsonObject {
+  margin-left: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.nestedObject {
+  margin-left: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.4);
+  border-left: 2px solid rgba(144, 202, 249, 0.3);
+}
+
+.jsonProperty {
+  margin-bottom: 8px;
+  line-height: 1.5;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.jsonPropertyKey {
+  color: #0d47a1;
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.jsonPropertyValue {
+  color: #444;
+}
+
+.jsonString {
+  color: #4caf50;
+}
+
+.jsonArray {
+  margin-left: 20px;
+  padding: 12px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.jsonArrayItem {
+  margin-left: 15px;
+  margin-bottom: 6px;
+  padding-left: 8px;
+  border-left: 2px solid rgba(144, 202, 249, 0.3);
+}
+
+.showRawJsonWrapper {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(144, 202, 249, 0.2);
+  text-align: center;
+}
+
+.showRawJsonButton {
+  background-color: rgba(30, 136, 229, 0.1);
+  color: #1976d2;
+  border: 1px solid rgba(30, 136, 229, 0.3);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.showRawJsonButton:hover {
+  background-color: rgba(30, 136, 229, 0.2);
+  transform: translateY(-1px);
+}
+
+.showRawJsonButton:active {
+  transform: translateY(1px);
+}
+
+/* Detailed Information Section */
+.detailedInfoSection {
+  margin-bottom: 30px;
+}
+
+.detailedInfoSection h4 {
+  color: var(--primary-blue);
+  font-size: 1.2rem;
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.detailCard {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.detailCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.detailCard.urgent {
+  border-left: 5px solid var(--error-red);
+  background-color: rgba(229, 57, 53, 0.03);
+}
+
+.detailCard.soon {
+  border-left: 5px solid #FF9800;
+  background-color: rgba(255, 152, 0, 0.03);
+}
+
+.detailCard.routine {
+  border-left: 5px solid var(--success-green);
+  background-color: rgba(67, 160, 71, 0.03);
+}
+
+.detailCardTitle {
+  color: var(--primary-blue);
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.titleWithIcon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.titleWithIcon svg {
+  color: var(--primary-blue);
+}
+
+.detailCardText {
+  color: #444;
+  line-height: 1.6;
+  margin: 10px 0 0;
+}
+
+.detailCardBadge {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 15px;
+}
+
+/* Escalation Detail Card */
+.escalationDetailCard {
+  border-left: 5px solid var(--success-green);
+}
+
+.escalationDetailCard.urgent {
+  border-left: 5px solid var(--error-red);
+}
+
+.escalationDetailCard.soon {
+  border-left: 5px solid #FF9800;
+}
+
+.escalationDetailCard.routine {
+  border-left: 5px solid var(--success-green);
+}
+
+/* Recommendation styles in detail cards */
+.recommendationGroup {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px dashed rgba(144, 202, 249, 0.3);
+}
+
+.recommendationGroup:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.recommendationHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.recommendationLabel {
+  color: #1976d2;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 600;
+}
+
+.recommendationIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgba(67, 160, 71, 0.1);
+  color: #43a047;
+}
+
+.recommendationText {
+  color: #444;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.recommendationList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.recommendationItem {
+  padding: 8px 0;
+  margin-bottom: 5px;
+  position: relative;
+  padding-left: 25px;
+  color: #444;
+  line-height: 1.5;
+}
+
+.recommendationItem::before {
+  content: "•";
+  color: var(--primary-blue);
+  font-size: 1.2rem;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+
+.recommendationObject {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recommendationProperty {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.recommendationPropertyKey {
+  font-weight: 600;
+  color: #0d47a1;
+  min-width: 100px;
+}
+
+.recommendationPropertyValue {
+  color: #444;
+  flex: 1;
+}
+
+/* Care list styles */
+.careList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.careItem {
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 30px;
+  background-color: rgba(67, 160, 71, 0.05);
+  border-radius: 8px;
+  border-left: 3px solid var(--success-green);
+  color: #444;
+}
+
+.careItem::before {
+  content: "✓";
+  color: var(--success-green);
+  font-weight: bold;
+  position: absolute;
+  left: 10px;
+}
+
+/* Medications grid */
+.medicationsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+.medicationCard {
+  background-color: rgba(144, 202, 249, 0.05);
+  border-radius: 10px;
+  padding: 15px;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+}
+
+.medicationCardTitle {
+  color: var(--primary-blue);
+  font-size: 1.05rem;
+  margin: 0 0 12px 0;
+  font-weight: 600;
+  border-bottom: 1px dashed rgba(144, 202, 249, 0.3);
+  padding-bottom: 8px;
+}
+
+.medicationProperty {
+  display: flex;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+.medicationLabel {
+  font-weight: 600;
+  color: #0d47a1;
+  min-width: 100px;
+  margin-right: 10px;
+}
+
+.medicationValue {
+  color: #444;
+  flex: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .medicationsGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .recommendationProperty {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .medicationProperty {
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .medicationLabel, 
+  .recommendationPropertyKey {
+    min-width: auto;
+  }
+}
+
+/* Clean Medication List */
+.cleanMedicationList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cleanMedicationItem {
+  position: relative;
+  padding: 8px 0 8px 25px;
+  margin-bottom: 15px;
+  color: #444;
+  line-height: 1.6;
+  display: flex;
+  flex-direction: column;
+}
+
+.cleanMedicationItem::before {
+  content: "•";
+  color: var(--primary-blue);
+  font-size: 24px;
+  position: absolute;
+  left: 0;
+  top: 3px;
+}
+
+.cleanMedicationItem .medicationName {
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-right: 10px;
+  display: block;
+  font-size: 1.05rem;
+}
+
+.cleanMedicationItem .medicationDosage {
+  margin-top: 6px;
+  display: block;
+  font-size: 0.95rem;
+}
+
+.cleanMedicationItem .medicationInstructions {
+  margin-top: 6px;
+  color: #555;
+  font-style: italic;
+  display: block;
+  font-size: 0.95rem;
+} 
