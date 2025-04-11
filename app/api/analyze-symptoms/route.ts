@@ -113,7 +113,7 @@ function formatNHSResponse(data: any, symptomQuery: string) {
 function extractSelfCareFromNHSResponse(entity: any) {
   // Try to extract self-care advice from the response
   // This is a simplified version - the actual implementation would depend on NHS API structure
-  const selfCare = [];
+  const selfCare: string[] = [];
   
   // Check if there's a hasPart array with advice
   if (entity.hasPart && Array.isArray(entity.hasPart)) {

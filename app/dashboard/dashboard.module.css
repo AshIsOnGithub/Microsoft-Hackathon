@@ -932,6 +932,65 @@
   box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
 }
 
+/* Mic button styles */
+.micButton {
+  position: absolute;
+  right: 50px; /* Position left of send button */
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 2;
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+}
+
+.micButton:hover {
+  background-color: var(--dark-blue);
+  transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+}
+
+.micButton:disabled {
+  background-color: var(--text-grey);
+  cursor: not-allowed;
+  transform: translateY(-50%);
+  opacity: 0.5;
+}
+
+.micButton.disabled {
+  background-color: rgba(229, 57, 53, 0.7);
+  color: white;
+  cursor: not-allowed;
+}
+
+.micButton.listening {
+  background-color: #E53935;
+  color: white;
+  animation: pulseRed 1.5s infinite;
+  box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.7);
+}
+
+@keyframes pulseRed {
+  0% {
+    box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(229, 57, 53, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(229, 57, 53, 0);
+  }
+}
+
 .sendButton {
   position: absolute;
   right: 8px;
@@ -947,18 +1006,21 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
 }
 
 .sendButton:hover {
   background-color: var(--dark-blue);
   transform: translateY(-50%) scale(1.05);
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
 }
 
 .sendButton:disabled {
   background-color: var(--text-grey);
   cursor: not-allowed;
   transform: translateY(-50%);
+  opacity: 0.5;
 }
 
 .optionsMessage {
@@ -1095,8 +1157,11 @@
   }
   
   .userMessage .messageContent,
-  .assistantMessage .messageContent {
+  .assistantMessage .messageContentWrapper {
     max-width: 85%;
+  }
+  
+  .messageContent {
     padding: 10px 15px;
   }
   
@@ -1109,9 +1174,14 @@
     font-size: 15px;
   }
   
-  .sendButton {
+  .sendButton,
+  .micButton {
     width: 32px;
     height: 32px;
+  }
+  
+  .micButton {
+    right: 45px;
   }
 }
 
@@ -1149,6 +1219,22 @@
     height: 34px;
     padding: 6px;
   }
+  
+  .speakButton {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .micButton {
+    right: 40px;
+    width: 28px;
+    height: 28px;
+  }
+  
+  .sendButton {
+    width: 28px;
+    height: 28px;
+  }
 
   .welcomeSection {
     padding: 30px;
@@ -1156,5 +1242,200 @@
 
   .symptomsCard {
     padding: 30px;
+  }
+}
+
+/* Message content wrapper for TTS button */
+.messageContentWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 75%;
+}
+
+.messageContent {
+  background-color: var(--off-white);
+  color: var(--text-black);
+  border-radius: 18px 18px 18px 0;
+  padding: 12px 18px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  border: 1px solid rgba(144, 202, 249, 0.2);
+  flex: 1;
+}
+
+.assistantMessage:hover .messageContent {
+  transform: translateY(-2px);
+}
+
+/* Speak button styles */
+.speakButton {
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 1;
+  flex-shrink: 0;
+  margin-top: 8px;
+  margin-left: 5px;
+  box-shadow: 0 2px 8px rgba(30, 136, 229, 0.3);
+  border: 2px solid white;
+}
+
+.speakButton:hover {
+  background-color: var(--dark-blue);
+  color: white;
+  opacity: 1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(30, 136, 229, 0.4);
+}
+
+.speakButton.speaking {
+  background-color: #E53935;
+  color: white;
+  animation: pulseSpeaking 1.5s infinite;
+  opacity: 1;
+  box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.5);
+}
+
+@keyframes pulseSpeaking {
+  0% {
+    box-shadow: 0 0 0 0 rgba(229, 57, 53, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(229, 57, 53, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(229, 57, 53, 0);
+  }
+}
+
+/* Permission alert styles */
+.permissionAlert {
+  display: flex;
+  align-items: center;
+  background-color: rgba(229, 57, 53, 0.1);
+  color: var(--error-red);
+  padding: 12px 16px;
+  margin: 0 20px 15px;
+  border-radius: 10px;
+  border-left: 4px solid var(--error-red);
+  gap: 12px;
+  font-size: 14px;
+}
+
+.permissionAlert svg {
+  flex-shrink: 0;
+  color: var(--error-red);
+}
+
+.permissionAlert span {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.retryButton {
+  background-color: var(--white);
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.retryButton:hover {
+  background-color: var(--primary-blue);
+  color: var(--white);
+}
+
+/* Listening indicator styles */
+.listeningIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 10px 0 15px;
+  gap: 10px;
+}
+
+.listeningText {
+  color: var(--primary-blue);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.listeningWaves {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.listeningWaves span {
+  display: block;
+  width: 3px;
+  margin: 0 2px;
+  background-color: var(--primary-blue);
+  animation: listening-wave 1.2s infinite ease-in-out;
+}
+
+.listeningWaves span:nth-child(1) {
+  height: 8px;
+  animation-delay: 0s;
+}
+
+.listeningWaves span:nth-child(2) {
+  height: 16px;
+  animation-delay: 0.2s;
+}
+
+.listeningWaves span:nth-child(3) {
+  height: 20px;
+  animation-delay: 0.4s;
+}
+
+.listeningWaves span:nth-child(4) {
+  height: 16px;
+  animation-delay: 0.6s;
+}
+
+.listeningWaves span:nth-child(5) {
+  height: 8px;
+  animation-delay: 0.8s;
+}
+
+@keyframes listening-wave {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.5);
+  }
+}
+
+/* Responsive styles for permission alert */
+@media (max-width: 768px) {
+  .permissionAlert {
+    flex-direction: column;
+    text-align: center;
+    padding: 15px;
+  }
+  
+  .permissionAlert svg {
+    margin-bottom: 8px;
+  }
+  
+  .permissionAlert .retryButton {
+    margin-top: 10px;
   }
 } 
