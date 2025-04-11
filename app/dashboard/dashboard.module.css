@@ -215,6 +215,8 @@
   width: 100%;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
 .symptomsCard {
   background-color: var(--card-bg);
   border-radius: 16px;
@@ -347,6 +349,8 @@
 .newCheckButton:hover {
   background-color: var(--primary-blue);
   color: var(--white);
+}
+
 .cardTitle {
   color: var(--primary-blue);
   margin-bottom: 25px;
