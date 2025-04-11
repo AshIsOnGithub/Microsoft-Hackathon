@@ -36,6 +36,23 @@ export default function Dashboard() {
   // Azure Speech SDK token
   const [azureToken, setAzureToken] = useState<string | null>(null);
   const [azureRegion, setAzureRegion] = useState<string | null>(null);
+  
+  // Language selection state
+  const [currentLanguage, setCurrentLanguage] = useState('en');
+  const [translating, setTranslating] = useState(false);
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  
+  // Available languages
+  const availableLanguages = [
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Spanish' },
+    { code: 'fr', name: 'French' },
+    { code: 'de', name: 'German' },
+    { code: 'zh', name: 'Chinese' },
+    { code: 'ar', name: 'Arabic' },
+    { code: 'hi', name: 'Hindi' },
+    { code: 'ru', name: 'Russian' }
+  ];
 
   useEffect(() => {
     const getUser = async () => {
@@ -240,6 +257,59 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error fetching Azure Speech token:', error);
     }
+  };
+  
+  // Translate text to selected language
+  const translateText = async (text: string, targetLanguage: string) => {
+    if (targetLanguage === 'en') return text; // No need to translate if English
+    
+    try {
+      setTranslating(true);
+      const response = await fetch('/api/translate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          text, 
+          targetLanguage 
+        }),
+      });
+      
+      if (!response.ok) {
+        console.error('Translation failed');
+        setTranslating(false);
+        return text;
+      }
+      
+      const data = await response.json();
+      setTranslating(false);
+      return data.translatedText;
+    } catch (error) {
+      console.error('Error during translation:', error);
+      setTranslating(false);
+      return text;
+    }
+  };
+  
+  // Change the interface language
+  const changeLanguage = async (languageCode: string) => {
+    if (languageCode === currentLanguage) return;
+    
+    setCurrentLanguage(languageCode);
+    setShowLanguageSelector(false);
+    
+    // Translate existing messages
+    const newMessages = await Promise.all(messages.map(async (message) => {
+      // Only translate text content, not UI elements or user messages
+      if (['assistant', 'assistant-error', 'assistant-escalation', 'assistant-disclaimer'].includes(message.type) && message.content) {
+        const translatedContent = await translateText(message.content, languageCode);
+        return { ...message, content: translatedContent };
+      }
+      return message;
+    }));
+    
+    setMessages(newMessages);
   };
 
   // Toggle speech recognition with permission handling
@@ -450,6 +520,16 @@ export default function Dashboard() {
     setSymptomInput('');
     
     try {
+      // Translate user input to English if needed for API processing
+      let processedInput = symptomInput;
+      if (currentLanguage !== 'en') {
+        try {
+          processedInput = await translateText(symptomInput, 'en');
+        } catch (error) {
+          console.error('Failed to translate input, proceeding with original:', error);
+        }
+      }
+      
       // Call the API to analyze symptoms
       console.log("Calling analyze-symptoms API endpoint...");
       const response = await fetch('/api/analyze-symptoms', {
@@ -457,7 +537,7 @@ export default function Dashboard() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ symptoms: symptomInput }),
+        body: JSON.stringify({ symptoms: processedInput }),
       });
       
       if (!response.ok) {
@@ -476,6 +556,7 @@ export default function Dashboard() {
           symptoms: symptomInput,
           result: data,
           created_at: new Date().toISOString(),
+          language: currentLanguage
         });
       }
       
@@ -483,7 +564,7 @@ export default function Dashboard() {
       setMessages(prev => prev.filter(msg => msg.type !== 'typing'));
       
       // Generate conversational messages from the API response
-      createConversationalMessages(data);
+      await createConversationalMessages(data);
       
     } catch (err: any) {
       console.error("Error processing symptom check:", err);
@@ -492,11 +573,22 @@ export default function Dashboard() {
       setMessages(prev => prev.filter(msg => msg.type !== 'typing'));
       
       // Add error message
+      let errorMessage = `I'm sorry, I couldn't analyze your symptoms. ${err.message || 'Please try again later.'}`;
+      
+      // Translate error message if not in English
+      if (currentLanguage !== 'en') {
+        try {
+          errorMessage = await translateText(errorMessage, currentLanguage);
+        } catch (error) {
+          console.error('Failed to translate error message:', error);
+        }
+      }
+      
       setMessages(prev => [
         ...prev, 
         { 
           type: 'assistant-error', 
-          content: `I'm sorry, I couldn't analyze your symptoms. ${err.message || 'Please try again later.'}`,
+          content: errorMessage,
           animate: true
         }
       ]);
@@ -507,28 +599,48 @@ export default function Dashboard() {
     }
   };
 
-  const createConversationalMessages = (data: any) => {
+  const createConversationalMessages = async (data: any) => {
     // Add conditions message
     if (data.possibleConditions && data.possibleConditions.length > 0) {
       const condition = data.possibleConditions[0];
+      
+      let conditionMessage = `Based on what you've described, this could be ${condition.name.toLowerCase()}. ${condition.description}`;
+      
+      // Translate condition message if needed
+      if (currentLanguage !== 'en') {
+        try {
+          conditionMessage = await translateText(conditionMessage, currentLanguage);
+        } catch (error) {
+          console.error('Failed to translate condition message:', error);
+        }
+      }
       
       setMessages(prev => [
         ...prev, 
         { 
           type: 'assistant', 
-          content: `Based on what you've described, this could be ${condition.name.toLowerCase()}. ${condition.description}`,
+          content: conditionMessage,
           animate: true
         }
       ]);
       
       // Add delay before next message
-      setTimeout(() => {
+      setTimeout(async () => {
         // Add recommendations
         if (data.recommendations) {
           let recommendationMessage = `${data.recommendations.general || 'Here\'s what I recommend:'} `;
           
           if (data.recommendations.selfCare && data.recommendations.selfCare.length > 0) {
             recommendationMessage += `\n\nFor self-care, try these steps:\n• ${data.recommendations.selfCare.join('\n• ')}`;
+          }
+          
+          // Translate recommendation message if needed
+          if (currentLanguage !== 'en') {
+            try {
+              recommendationMessage = await translateText(recommendationMessage, currentLanguage);
+            } catch (error) {
+              console.error('Failed to translate recommendation message:', error);
+            }
           }
           
           setMessages(prev => [
@@ -542,10 +654,19 @@ export default function Dashboard() {
           
           // Add medications with delay if available
           if (data.recommendations.medications && data.recommendations.medications.length > 0) {
-            setTimeout(() => {
-              const medicationsMessage = `You might consider these medications:\n• ${data.recommendations.medications.map((med: any) => 
+            setTimeout(async () => {
+              let medicationsMessage = `You might consider these medications:\n• ${data.recommendations.medications.map((med: any) => 
                 `${med.name}: ${med.dosage} - ${med.instructions}`
               ).join('\n• ')}`;
+              
+              // Translate medications message if needed
+              if (currentLanguage !== 'en') {
+                try {
+                  medicationsMessage = await translateText(medicationsMessage, currentLanguage);
+                } catch (error) {
+                  console.error('Failed to translate medications message:', error);
+                }
+              }
               
               setMessages(prev => [
                 ...prev, 
@@ -562,7 +683,7 @@ export default function Dashboard() {
       
       // Add escalation advice with delay
       if (data.escalation) {
-        setTimeout(() => {
+        setTimeout(async () => {
           const escalationLevel = data.escalation.level;
           let levelEmoji = '✅';
           
@@ -572,39 +693,67 @@ export default function Dashboard() {
             levelEmoji = '⚠️';
           }
           
+          let escalationMessage = `${levelEmoji} ${data.escalation.message}`;
+          
+          // Translate escalation message if needed
+          if (currentLanguage !== 'en') {
+            try {
+              // Keep the emoji but translate the text
+              const translatedEscalationText = await translateText(data.escalation.message, currentLanguage);
+              escalationMessage = `${levelEmoji} ${translatedEscalationText}`;
+            } catch (error) {
+              console.error('Failed to translate escalation message:', error);
+            }
+          }
+          
           setMessages(prev => [
             ...prev, 
             { 
               type: 'assistant-escalation', 
-              content: `${levelEmoji} ${data.escalation.message}`,
+              content: escalationMessage,
               level: escalationLevel,
               animate: true
             }
           ]);
           
           // Add options for next steps
-          setTimeout(() => {
+          setTimeout(async () => {
+            // Translate option labels if needed
+            let options = [
+              { 
+                label: 'Find healthcare services nearby', 
+                action: 'link', 
+                path: '/dashboard/nearby' 
+              },
+              {
+                label: escalationLevel === 'urgent' ? 'Call emergency services' : 'Book GP appointment',
+                action: escalationLevel === 'urgent' ? 'tel' : 'book',
+                value: escalationLevel === 'urgent' ? '999' : 'gp'
+              },
+              { 
+                label: 'Tell me more about this condition', 
+                action: 'more-info',
+                condition: data.possibleConditions[0]
+              }
+            ];
+            
+            if (currentLanguage !== 'en') {
+              try {
+                // Translate all option labels
+                options = await Promise.all(options.map(async (option) => {
+                  const translatedLabel = await translateText(option.label, currentLanguage);
+                  return { ...option, label: translatedLabel };
+                }));
+              } catch (error) {
+                console.error('Failed to translate options:', error);
+              }
+            }
+            
             setMessages(prev => [
               ...prev, 
               { 
                 type: 'assistant-options', 
-                options: [
-                  { 
-                    label: 'Find healthcare services nearby', 
-                    action: 'link', 
-                    path: '/dashboard/nearby' 
-                  },
-                  {
-                    label: escalationLevel === 'urgent' ? 'Call emergency services' : 'Book GP appointment',
-                    action: escalationLevel === 'urgent' ? 'tel' : 'book',
-                    value: escalationLevel === 'urgent' ? '999' : 'gp'
-                  },
-                  { 
-                    label: 'Tell me more about this condition', 
-                    action: 'more-info',
-                    condition: data.possibleConditions[0]
-                  }
-                ],
+                options: options,
                 animate: true
               }
             ]);
@@ -613,64 +762,151 @@ export default function Dashboard() {
       }
       
       // Add disclaimer with delay
-      setTimeout(() => {
+      setTimeout(async () => {
+        let disclaimerMessage = "Please remember this is not a replacement for professional medical advice. If your symptoms are severe or you're unsure, please consult a healthcare professional.";
+        
+        // Translate disclaimer message if needed
+        if (currentLanguage !== 'en') {
+          try {
+            disclaimerMessage = await translateText(disclaimerMessage, currentLanguage);
+          } catch (error) {
+            console.error('Failed to translate disclaimer message:', error);
+          }
+        }
+        
         setMessages(prev => [
           ...prev, 
           { 
             type: 'assistant-disclaimer', 
-            content: "Please remember this is not a replacement for professional medical advice. If your symptoms are severe or you're unsure, please consult a healthcare professional.",
+            content: disclaimerMessage,
             animate: true
           }
         ]);
       }, 3000);
     } else {
       // Fallback message if no conditions found
+      let fallbackMessage = "I couldn't identify any specific conditions based on the symptoms you've described. Please provide more details about your symptoms, when they started, and how severe they are.";
+      
+      // Translate fallback message if needed
+      if (currentLanguage !== 'en') {
+        try {
+          fallbackMessage = await translateText(fallbackMessage, currentLanguage);
+        } catch (error) {
+          console.error('Failed to translate fallback message:', error);
+        }
+      }
+      
       setMessages(prev => [
         ...prev, 
         { 
           type: 'assistant', 
-          content: "I couldn't identify specific conditions based on the symptoms you described. Could you provide more details about what you're experiencing?",
+          content: fallbackMessage,
           animate: true
         }
       ]);
     }
   };
 
-  const handleOptionClick = (option: any) => {
+  const handleOptionClick = async (option: any) => {
+    console.log("Option clicked:", option);
+    
     if (option.action === 'more-info' && option.condition) {
-      // Show more info about the condition
-      const condition = option.condition;
-      setMessages(prev => [
-        ...prev,
-        { type: 'user', content: `Tell me more about ${condition.name}` },
-        { 
-          type: 'assistant', 
-          content: `${condition.name} is ${condition.description}\n\n${condition.nhsUrl ? `You can find more detailed information on the NHS website.` : ''}`,
-          animate: true,
-          links: condition.nhsUrl ? [{ text: 'NHS Website', url: condition.nhsUrl }] : []
+      // Add typing indicator
+      setMessages(prev => [...prev, { type: 'typing' }]);
+      
+      try {
+        // Generate more info about the condition
+        const response = await fetch('/api/condition-info', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ condition: option.condition.name }),
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Failed to get condition info (${response.status})`);
         }
-      ]);
-    } else if (option.action === 'link' && option.path) {
-      // Let the Link component handle navigation
-    } else if (option.action === 'tel' && option.value) {
-      // Let the link handle phone call
+        
+        const data = await response.json();
+        console.log("Condition info:", data);
+        
+        // Remove typing indicator
+        setMessages(prev => prev.filter(msg => msg.type !== 'typing'));
+        
+        // Create informational message
+        let infoMessage = data.info || `${option.condition.name} is a common condition. If you're concerned about your symptoms, we recommend consulting a healthcare professional.`;
+        
+        // Add NHS links if available
+        if (data.links && data.links.length > 0) {
+          infoMessage += "\n\nLearn more from trusted sources:";
+        }
+        
+        // Translate the message if needed
+        if (currentLanguage !== 'en') {
+          try {
+            infoMessage = await translateText(infoMessage, currentLanguage);
+          } catch (error) {
+            console.error('Failed to translate condition info:', error);
+          }
+        }
+        
+        // Add the informational message
+        setMessages(prev => [
+          ...prev, 
+          { 
+            type: 'assistant', 
+            content: infoMessage,
+            links: data.links,
+            animate: true
+          }
+        ]);
+        
+      } catch (error) {
+        console.error("Error fetching condition info:", error);
+        
+        // Remove typing indicator
+        setMessages(prev => prev.filter(msg => msg.type !== 'typing'));
+        
+        // Add error message
+        let errorMessage = "I'm sorry, I couldn't retrieve more information about this condition right now.";
+        
+        // Translate error message if needed
+        if (currentLanguage !== 'en') {
+          try {
+            errorMessage = await translateText(errorMessage, currentLanguage);
+          } catch (error) {
+            console.error('Failed to translate error message:', error);
+          }
+        }
+        
+        setMessages(prev => [
+          ...prev, 
+          { 
+            type: 'assistant-error', 
+            content: errorMessage,
+            animate: true
+          }
+        ]);
+      }
     } else if (option.action === 'book' && option.value === 'gp') {
-      // Mock GP booking
+      // Show GP booking info
+      let bookingMessage = "To book a GP appointment, you can use the NHS app, contact your GP directly, or call NHS 111 for advice.";
+      
+      // Translate booking message if needed
+      if (currentLanguage !== 'en') {
+        try {
+          bookingMessage = await translateText(bookingMessage, currentLanguage);
+        } catch (error) {
+          console.error('Failed to translate booking message:', error);
+        }
+      }
+      
       setMessages(prev => [
-        ...prev,
-        { type: 'user', content: 'I want to book a GP appointment' },
+        ...prev, 
         { 
           type: 'assistant', 
-          content: 'I can help you book a GP appointment. Which day would you prefer?',
-          animate: true
-        },
-        {
-          type: 'assistant-options',
-          options: [
-            { label: 'Today', action: 'book-day', value: 'today' },
-            { label: 'Tomorrow', action: 'book-day', value: 'tomorrow' },
-            { label: 'Later this week', action: 'book-day', value: 'later' }
-          ],
+          content: bookingMessage,
           animate: true
         }
       ]);
@@ -746,6 +982,46 @@ export default function Dashboard() {
       <div className={styles.chatContainer}>
         <div className={styles.chatHeader}>
           <h2>How can we help you{user?.email ? `, ${user.email.split('@')[0]}` : ''}?</h2>
+          
+          {/* Language selector dropdown */}
+          <div className={styles.languageSelector}>
+            <button 
+              className={styles.languageButton}
+              onClick={() => setShowLanguageSelector(!showLanguageSelector)}
+              aria-label="Select language"
+              title="Select language"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="2" y1="12" x2="22" y2="12"></line>
+                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+              </svg>
+              <span>{availableLanguages.find(lang => lang.code === currentLanguage)?.name || 'English'}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            
+            {showLanguageSelector && (
+              <div className={styles.languageDropdown}>
+                {availableLanguages.map(language => (
+                  <button
+                    key={language.code}
+                    className={`${styles.languageOption} ${currentLanguage === language.code ? styles.activeLanguage : ''}`}
+                    onClick={() => changeLanguage(language.code)}
+                  >
+                    {language.name}
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {translating && (
+              <div className={styles.translatingIndicator}>
+                <span>Translating...</span>
+              </div>
+            )}
+          </div>
         </div>
         
         {(hasMicPermission === false || error) && (
@@ -883,6 +1159,14 @@ export default function Dashboard() {
               type="submit" 
               className={styles.sendButton}
               disabled={isLoading || !symptomInput.trim() || isListening}
+              aria-label="Send message"
+              title="Send message"
+              onClick={(e) => {
+                if (symptomInput.trim()) {
+                  e.preventDefault();
+                  handleSymptomCheck(e);
+                }
+              }}
             >
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M2.01 21L23 12L2.01 3L2 10L17 12L2 14L2.01 21Z" fill="white" />
