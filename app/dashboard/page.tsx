@@ -50,6 +50,8 @@ export default function Dashboard() {
       return;
     }
     
+    console.log(`Submitting symptom check: "${symptomInput}"`);
+    
     // Set hasMessages to true to show the message area
     setHasMessages(true);
     
@@ -65,6 +67,7 @@ export default function Dashboard() {
     
     try {
       // Call the API to analyze symptoms
+      console.log("Calling analyze-symptoms API endpoint...");
       const response = await fetch('/api/analyze-symptoms', {
         method: 'POST',
         headers: {
@@ -74,10 +77,13 @@ export default function Dashboard() {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to analyze symptoms');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('API response error:', response.status, response.statusText, errorData);
+        throw new Error(errorData.error || `Failed to analyze symptoms (${response.status})`);
       }
       
       const data = await response.json();
+      console.log("API response data:", data);
       
       // Save to history in Supabase
       if (user) {
@@ -96,6 +102,8 @@ export default function Dashboard() {
       createConversationalMessages(data);
       
     } catch (err: any) {
+      console.error("Error processing symptom check:", err);
+      
       // Remove typing indicator
       setMessages(prev => prev.filter(msg => msg.type !== 'typing'));
       
@@ -104,13 +112,12 @@ export default function Dashboard() {
         ...prev, 
         { 
           type: 'assistant-error', 
-          content: 'I\'m sorry, I couldn\'t analyze your symptoms at the moment. Please try again later.',
+          content: `I'm sorry, I couldn't analyze your symptoms. ${err.message || 'Please try again later.'}`,
           animate: true
         }
       ]);
       
       setError(err.message || 'An error occurred while analyzing symptoms');
-      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -439,28 +446,7 @@ export default function Dashboard() {
           </form>
         </div>
         
-        <div className={styles.footerLinks}>
-          <Link href="/dashboard/history" className={styles.footerLink}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }}>
-              <path d="M13 3C8.03 3 4 7.03 4 12H1L4.89 15.89L4.96 16.03L9 12H6C6 8.13 9.13 5 13 5C16.87 5 20 8.13 20 12C20 15.87 16.87 19 13 19C11.07 19 9.32 18.21 8.06 16.94L6.64 18.36C8.27 19.99 10.51 21 13 21C17.97 21 22 16.97 22 12C22 7.03 17.97 3 13 3ZM12 8V13L16.28 15.54L17 14.33L13.5 12.25V8H12Z" fill="currentColor" />
-            </svg>
-            History
-          </Link>
-          <span className={styles.footerDivider}>•</span>
-          <Link href="/dashboard/nearby" className={styles.footerLink}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }}>
-              <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" fill="currentColor" />
-            </svg>
-            Nearby
-          </Link>
-          <span className={styles.footerDivider}>•</span>
-          <Link href="/dashboard/profile" className={styles.footerLink}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '5px' }}>
-              <path d="M12 12C14.21 12 16 10.21 16 8C16 5.79 14.21 4 12 4C9.79 4 8 5.79 8 8C8 10.21 9.79 12 12 12ZM12 14C9.33 14 4 15.34 4 18V20H20V18C20 15.34 14.67 14 12 14Z" fill="currentColor" />
-            </svg>
-            Profile
-          </Link>
-        </div>
+        
       </div>
       
       {/* Animated background elements */}
