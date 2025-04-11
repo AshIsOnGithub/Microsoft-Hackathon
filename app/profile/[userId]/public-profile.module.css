@@ -1,19 +1,4 @@
-:root {
-  --primary-blue: #1E88E5;
-  --dark-blue: #1565C0;
-  --light-blue: #E3F2FD;
-  --success-green: #43A047;
-  --error-red: #E53935;
-  --warning-orange: #FB8C00;
-  --text-primary: #263238;
-  --text-secondary: #607D8B;
-  --text-light: #B0BEC5;
-  --bg-primary: #F8FAFC;
-  --bg-secondary: #EEF2F6;
-  --card-bg: #FFFFFF;
-  --shadow: rgba(0, 0, 0, 0.05);
-  --divider: #E0E0E0;
-}
+/* CSS Variables are now imported from globals.css */
 
 .publicProfileContainer {
   max-width: 800px;
