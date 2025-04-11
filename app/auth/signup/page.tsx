@@ -1,0 +1,116 @@
+'use client';
+
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useRouter } from 'next/navigation';
+import styles from '../auth.module.css';
+
+export default function SignUp() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const router = useRouter();
+  const supabase = createClientComponentClient();
+
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setMessage(null);
+    
+    // Password validation
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setMessage('Check your email for the confirmation link');
+    } catch (err: any) {
+      setError(err.message || 'An error occurred during sign up');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className={styles.formTitle}>Create an Account</h2>
+      
+      <form onSubmit={handleSignUp}>
+        {error && <div className={styles.errorMessage}>{error}</div>}
+        {message && <div className={styles.successMessage}>{message}</div>}
+        
+        <div className={styles.formGroup}>
+          <label htmlFor="email" className={styles.formLabel}>Email</label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className={styles.formInput}
+            placeholder="your@email.com"
+          />
+        </div>
+        
+        <div className={styles.formGroup}>
+          <label htmlFor="password" className={styles.formLabel}>Password</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className={styles.formInput}
+            placeholder="••••••••"
+          />
+        </div>
+        
+        <div className={styles.formGroup}>
+          <label htmlFor="confirmPassword" className={styles.formLabel}>Confirm Password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            className={styles.formInput}
+            placeholder="••••••••"
+          />
+        </div>
+        
+        <button type="submit" className={styles.submitButton} disabled={loading}>
+          {loading ? 'Creating account...' : 'Sign Up'}
+        </button>
+      </form>
+      
+      <div className={styles.formFooter}>
+        Already have an account?{' '}
+        <Link href="/auth/signin" className={styles.formLink}>Sign In</Link>
+      </div>
+    </div>
+  );
+} 
