@@ -5,6 +5,13 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
 import styles from './dashboard.module.css';
 
+// Add type declaration for Google Maps
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 export default function Dashboard() {
   const [user, setUser] = useState<any>(null);
   const [symptomInput, setSymptomInput] = useState('');
@@ -53,6 +60,28 @@ export default function Dashboard() {
     { code: 'hi', name: 'Hindi' },
     { code: 'ru', name: 'Russian' }
   ];
+
+  // Add new state variables for the pharmacy map
+  const [showPharmacyMap, setShowPharmacyMap] = useState(false);
+  const [pharmacies, setPharmacies] = useState<any[]>([]);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  const [loadingPharmacies, setLoadingPharmacies] = useState(false);
+
+  // Replace the entire mapTexts and translatePharmacyTexts with simpler approach
+  // Create a fixed set of pharmacy-related text in English
+  const [pharmacyTexts, setPharmacyTexts] = useState({
+    title: 'Nearby Pharmacies',
+    findButton: 'Find Nearby Pharmacies',
+    loadingButton: 'Loading...',
+    findingPharmacies: 'Finding nearby pharmacies...',
+    foundPharmacies: 'Found {count} pharmacies nearby',
+    noPharmacies: 'No pharmacies found nearby. Try expanding your search radius.',
+    directions: 'Directions',
+    distanceAway: '{distance} km away',
+    mapPlaceholder: 'Interactive map would display here with a valid API key.',
+    mapNote: 'Pharmacy locations are generated around your current location.'
+  });
 
   useEffect(() => {
     const getUser = async () => {
@@ -292,7 +321,7 @@ export default function Dashboard() {
     }
   };
   
-  // Change the interface language
+  // Update the language change handler to also translate pharmacy texts
   const changeLanguage = async (languageCode: string) => {
     if (languageCode === currentLanguage) return;
     
@@ -310,6 +339,38 @@ export default function Dashboard() {
     }));
     
     setMessages(newMessages);
+    
+    // Translate pharmacy texts if not English
+    if (languageCode !== 'en') {
+      try {
+        // Create a properly typed copy of the texts
+        const translatedTexts = { ...pharmacyTexts };
+        
+        // Use a type-safe approach to translate each key
+        const keys = Object.keys(translatedTexts) as Array<keyof typeof pharmacyTexts>;
+        for (const key of keys) {
+          translatedTexts[key] = await translateText(translatedTexts[key], languageCode);
+        }
+        
+        setPharmacyTexts(translatedTexts);
+      } catch (error) {
+        console.error('Error translating pharmacy texts:', error);
+      }
+    } else {
+      // Reset to English defaults
+      setPharmacyTexts({
+        title: 'Nearby Pharmacies',
+        findButton: 'Find Nearby Pharmacies',
+        loadingButton: 'Loading...',
+        findingPharmacies: 'Finding nearby pharmacies...',
+        foundPharmacies: 'Found {count} pharmacies nearby',
+        noPharmacies: 'No pharmacies found nearby. Try expanding your search radius.',
+        directions: 'Directions',
+        distanceAway: '{distance} km away',
+        mapPlaceholder: 'Interactive map would display here with a valid API key.',
+        mapNote: 'Pharmacy locations are generated around your current location.'
+      });
+    }
   };
 
   // Toggle speech recognition with permission handling
@@ -717,47 +778,7 @@ export default function Dashboard() {
           ]);
           
           // Add options for next steps
-          setTimeout(async () => {
-            // Translate option labels if needed
-            let options = [
-              { 
-                label: 'Find healthcare services nearby', 
-                action: 'link', 
-                path: '/dashboard/nearby' 
-              },
-              {
-                label: escalationLevel === 'urgent' ? 'Call emergency services' : 'Book GP appointment',
-                action: escalationLevel === 'urgent' ? 'tel' : 'book',
-                value: escalationLevel === 'urgent' ? '999' : 'gp'
-              },
-              { 
-                label: 'Tell me more about this condition', 
-                action: 'more-info',
-                condition: data.possibleConditions[0]
-              }
-            ];
-            
-            if (currentLanguage !== 'en') {
-              try {
-                // Translate all option labels
-                options = await Promise.all(options.map(async (option) => {
-                  const translatedLabel = await translateText(option.label, currentLanguage);
-                  return { ...option, label: translatedLabel };
-                }));
-              } catch (error) {
-                console.error('Failed to translate options:', error);
-              }
-            }
-            
-            setMessages(prev => [
-              ...prev, 
-              { 
-                type: 'assistant-options', 
-                options: options,
-                animate: true
-              }
-            ]);
-          }, 800);
+          
         }, 2000);
       }
       
@@ -976,6 +997,152 @@ export default function Dashboard() {
       </div>
     );
   };
+
+  // Add function to fetch nearby pharmacies
+  const fetchNearbyPharmacies = () => {
+    setShowPharmacyMap(true);
+    setLoadingPharmacies(true);
+    
+    // Get user's current location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          
+          try {
+            // Fetch nearby pharmacies using the location
+            const response = await fetch('/api/nearby-pharmacies', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ 
+                latitude, 
+                longitude,
+                radius: 5000, // 5km radius
+              }),
+            });
+            
+            if (!response.ok) {
+              throw new Error('Failed to fetch nearby pharmacies');
+            }
+            
+            const data = await response.json();
+            setPharmacies(data.pharmacies || []);
+          } catch (error) {
+            console.error('Error fetching nearby pharmacies:', error);
+            setLocationError('Unable to fetch nearby pharmacies. Please try again later.');
+          } finally {
+            setLoadingPharmacies(false);
+          }
+        },
+        (error) => {
+          console.error('Error getting location:', error);
+          setLocationError('Location access denied. Please enable location services to see nearby pharmacies.');
+          setLoadingPharmacies(false);
+        }
+      );
+    } else {
+      setLocationError('Geolocation is not supported by your browser.');
+      setLoadingPharmacies(false);
+    }
+  };
+
+  // Add Google Maps script loading and map initialization
+  useEffect(() => {
+    // Skip if no user location or pharmacies
+    if (!userLocation || !showPharmacyMap || pharmacies.length === 0) return;
+    
+    // Check if Google Maps script is already loaded
+    if (!window.google) {
+      // Load Google Maps script
+      const googleMapsScript = document.createElement('script');
+      googleMapsScript.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBZpNAYS5uU_VL7t379YdV1wcq3U8-hqlM&libraries=places`;
+      googleMapsScript.async = true;
+      googleMapsScript.defer = true;
+      googleMapsScript.onload = initMap;
+      document.head.appendChild(googleMapsScript);
+    } else {
+      // If already loaded, initialize map
+      initMap();
+    }
+    
+    function initMap() {
+      // Get the map container
+      const mapElement = document.getElementById('pharmacy-map');
+      if (!mapElement || !userLocation) return;
+      
+      // Create the map
+      const map = new window.google.maps.Map(mapElement, {
+        center: { lat: userLocation.lat, lng: userLocation.lng },
+        zoom: 14,
+        styles: [
+          {
+            featureType: "poi.business",
+            elementType: "labels",
+            stylers: [{ visibility: "on" }],
+          },
+        ],
+      });
+      
+      // Add marker for user location
+      new window.google.maps.Marker({
+        position: { lat: userLocation.lat, lng: userLocation.lng },
+        map,
+        title: "Your Location",
+        icon: {
+          path: window.google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "#4285F4",
+          fillOpacity: 1,
+          strokeColor: "#ffffff",
+          strokeWeight: 2,
+        },
+      });
+      
+      // Add markers for each pharmacy
+      pharmacies.forEach((pharmacy) => {
+        const marker = new window.google.maps.Marker({
+          position: { lat: pharmacy.lat, lng: pharmacy.lng },
+          map,
+          title: pharmacy.name,
+          icon: {
+            url: "https://maps.google.com/mapfiles/ms/icons/red-dot.png",
+          },
+        });
+        
+        // Add info window for pharmacy details
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="padding: 10px; max-width: 200px;">
+              <h3 style="margin: 0 0 5px; font-size: 16px; color: #1E88E5;">${pharmacy.name}</h3>
+              <p style="margin: 0 0 5px; font-size: 14px;">${pharmacy.address}</p>
+              <p style="margin: 0; font-size: 13px; color: #666;">${pharmacy.distance} km away</p>
+            </div>
+          `,
+        });
+        
+        // Open info window when marker is clicked
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+      });
+      
+      // Fit the map to include all markers
+      const bounds = new window.google.maps.LatLngBounds();
+      bounds.extend({ lat: userLocation.lat, lng: userLocation.lng });
+      pharmacies.forEach((pharmacy) => {
+        bounds.extend({ lat: pharmacy.lat, lng: pharmacy.lng });
+      });
+      map.fitBounds(bounds);
+    }
+    
+    // Cleanup function
+    return () => {
+      // Remove any map-related event listeners if needed
+    };
+  }, [userLocation, pharmacies, showPharmacyMap]);
 
   return (
     <div className={styles.dashboardContainer}>
@@ -1200,6 +1367,140 @@ export default function Dashboard() {
         <div className={styles.animatedCircle} style={{ top: '60%', left: '55%', animationDelay: '1.5s', width: '200px', height: '200px' }}></div>
         <div className={styles.animatedPulse} style={{ top: '45%', left: '15%' }}></div>
         <div className={styles.animatedPulse} style={{ top: '25%', left: '75%' }}></div>
+      </div>
+
+      <div className={styles.mapContainer}>
+        <div className={styles.mapHeader}>
+          <div>
+            <h3>{pharmacyTexts.title}</h3>
+            <p className={styles.mapHeaderDescription}>Find pharmacies near your current location to get medications and advice</p>
+          </div>
+          <button 
+            className={styles.findPharmaciesButton} 
+            onClick={fetchNearbyPharmacies}
+            disabled={loadingPharmacies}
+          >
+            {loadingPharmacies ? (
+              <>
+                <div className={styles.buttonSpinner}></div>
+                {pharmacyTexts.loadingButton}
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                {pharmacyTexts.findButton}
+              </>
+            )}
+          </button>
+        </div>
+        
+        {locationError && (
+          <div className={styles.mapError}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>{locationError}</span>
+          </div>
+        )}
+        
+        {showPharmacyMap && !locationError && (
+          <div className={styles.mapWrapper}>
+            {loadingPharmacies ? (
+              <div className={styles.mapLoading}>
+                <div className={styles.loadingSpinner}></div>
+                <p>{pharmacyTexts.findingPharmacies}</p>
+              </div>
+            ) : (
+              <>
+                {/* This div will be used as the map container */}
+                <div className={styles.pharmacyMap} id="pharmacy-map">
+                  <div className={styles.mapPlaceholder}>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="10" r="3"></circle>
+                      <path d="M12 2a8 8 0 0 0-8 8c0 5 8 12 8 12s8-7 8-12a8 8 0 0 0-8-8z"></path>
+                    </svg>
+                    <h4>{pharmacyTexts.mapPlaceholder}</h4>
+                    <p className={styles.mapNote}>{pharmacyTexts.mapNote}</p>
+                    
+                    {userLocation && pharmacies.length > 0 && (
+                      <div className={styles.fallbackMapControls}>
+                        <div className={styles.mapLocation}>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                            <circle cx="12" cy="10" r="3"></circle>
+                          </svg>
+                          <span>Your location: {userLocation.lat.toFixed(5)}, {userLocation.lng.toFixed(5)}</span>
+                        </div>
+                        <a 
+                          href={`https://www.google.com/maps/search/pharmacy/@${userLocation.lat},${userLocation.lng},14z`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={styles.openGoogleMapsButton}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                            <polyline points="15 3 21 3 21 9"></polyline>
+                            <line x1="10" y1="14" x2="21" y2="3"></line>
+                          </svg>
+                          View Pharmacies in Google Maps
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {pharmacies.length > 0 ? (
+                  <div className={styles.pharmacyList}>
+                    <h4>{pharmacyTexts.foundPharmacies.replace('{count}', pharmacies.length.toString())}</h4>
+                    <ul>
+                      {pharmacies.map((pharmacy, index) => (
+                        <li key={index} className={styles.pharmacyItem}>
+                          <div className={styles.pharmacyInfo}>
+                            <h5>{pharmacy.name}</h5>
+                            <p>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                              </svg>
+                              {pharmacy.address}
+                            </p>
+                            <div className={styles.pharmacyDistance}>
+                              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                              </svg>
+                              <span>{pharmacyTexts.distanceAway.replace('{distance}', pharmacy.distance)}</span>
+                            </div>
+                          </div>
+                          <a 
+                            href={`https://www.google.com/maps/dir/?api=1&destination=${pharmacy.lat},${pharmacy.lng}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className={styles.directionsButton}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                            {pharmacyTexts.directions}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : (
+                  <div className={styles.noPharmacies}>
+                    <p>{pharmacyTexts.noPharmacies}</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
