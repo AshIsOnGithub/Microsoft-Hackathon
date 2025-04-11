@@ -68,41 +68,47 @@ export default function ProfilePage() {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (!session) {
+          setMessage({ text: 'You must be logged in to view your profile', type: 'error' });
           setLoading(false);
           return;
         }
+        
+        const userId = session.user.id;
         
         // Fetch profile data
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
-          .eq('user_id', session.user.id)
-          .single();
+          .eq('user_id', userId)
+          .maybeSingle();
 
         if (profileError && profileError.code !== 'PGRST116') {
-          throw profileError;
+          console.error('Error fetching profile data:', profileError);
+          setMessage({ text: 'Failed to load profile data', type: 'error' });
         }
         
         // Fetch medical history
         const { data: historyData, error: historyError } = await supabase
           .from('medical_history')
           .select('*')
-          .eq('user_id', session.user.id)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false });
           
         if (historyError) {
-          throw historyError;
+          console.error('Error fetching medical history:', historyError);
+          setMessage({ text: 'Failed to load medical history', type: 'error' });
         }
         
         // Fetch allergies
         const { data: allergiesData, error: allergiesError } = await supabase
           .from('allergies')
           .select('*')
-          .eq('user_id', session.user.id)
+          .eq('user_id', userId)
           .order('created_at', { ascending: false });
           
         if (allergiesError) {
-          throw allergiesError;
+          console.error('Error fetching allergies:', allergiesError);
+          setMessage({ text: 'Failed to load allergies', type: 'error' });
         }
 
         // Transform medical history data
@@ -131,8 +137,15 @@ export default function ProfilePage() {
           pastMedicalHistory: formattedMedicalHistory,
           allergies: formattedAllergies
         });
+        
+        // If this is a new user with no profile, automatically enable edit mode
+        if (!profileData) {
+          setEditMode(true);
+          setMessage({ text: 'Welcome! Please complete your profile information.', type: 'success' });
+        }
       } catch (error) {
         console.error('Error loading profile:', error);
+        setMessage({ text: 'Failed to load profile data', type: 'error' });
       } finally {
         setLoading(false);
       }
@@ -146,10 +159,26 @@ export default function ProfilePage() {
       setSaving(true);
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) return;
+      if (!session) {
+        setMessage({ text: 'You must be logged in to save your profile', type: 'error' });
+        return;
+      }
+      
+      const userId = session.user.id;
+      
+      // First check if profile exists
+      const { data: existingProfile, error: checkError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+        
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
       
       const profileData = {
-        user_id: session.user.id,
+        user_id: userId,
         full_name: profile.fullName,
         date_of_birth: profile.dateOfBirth,
         address: profile.address,
@@ -157,11 +186,24 @@ export default function ProfilePage() {
         updated_at: new Date().toISOString()
       };
       
-      const { error } = await supabase
-        .from('profiles')
-        .upsert(profileData);
-
-      if (error) throw error;
+      let result;
+      if (existingProfile) {
+        // Update existing profile
+        result = await supabase
+          .from('profiles')
+          .update(profileData)
+          .eq('user_id', userId);
+      } else {
+        // Insert new profile
+        result = await supabase
+          .from('profiles')
+          .insert({
+            ...profileData,
+            created_at: new Date().toISOString() 
+          });
+      }
+      
+      if (result.error) throw result.error;
       
       setMessage({ text: 'Profile saved successfully', type: 'success' });
       setEditMode(false);
@@ -177,16 +219,27 @@ export default function ProfilePage() {
 
   const addMedicalHistory = async () => {
     try {
+      // Validate inputs
+      if (!newHistory.condition.trim()) {
+        setMessage({ text: 'Please enter a medical condition', type: 'error' });
+        return;
+      }
+      
       setSaving(true);
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) return;
+      if (!session) {
+        setMessage({ text: 'You must be logged in to add medical history', type: 'error' });
+        return;
+      }
+      
+      const userId = session.user.id;
       
       const medicalHistoryData = {
-        user_id: session.user.id,
-        condition: newHistory.condition,
-        diagnosis_date: newHistory.diagnosisDate,
-        notes: newHistory.notes,
+        user_id: userId,
+        condition: newHistory.condition.trim(),
+        diagnosis_date: newHistory.diagnosisDate || null,
+        notes: newHistory.notes.trim(),
         created_at: new Date().toISOString()
       };
       
@@ -196,6 +249,10 @@ export default function ProfilePage() {
         .select();
 
       if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        throw new Error('Failed to add medical history');
+      }
       
       // Update local state with the new history item
       const newHistoryItem = {
@@ -235,16 +292,27 @@ export default function ProfilePage() {
 
   const addAllergy = async () => {
     try {
+      // Validate inputs
+      if (!newAllergy.allergen.trim()) {
+        setMessage({ text: 'Please enter an allergen', type: 'error' });
+        return;
+      }
+      
       setSaving(true);
       const { data: { session } } = await supabase.auth.getSession();
       
-      if (!session) return;
+      if (!session) {
+        setMessage({ text: 'You must be logged in to add allergies', type: 'error' });
+        return;
+      }
+      
+      const userId = session.user.id;
       
       const allergyData = {
-        user_id: session.user.id,
-        allergen: newAllergy.allergen,
+        user_id: userId,
+        allergen: newAllergy.allergen.trim(),
         severity: newAllergy.severity,
-        reaction: newAllergy.reaction,
+        reaction: newAllergy.reaction.trim(),
         created_at: new Date().toISOString()
       };
       
@@ -254,6 +322,10 @@ export default function ProfilePage() {
         .select();
 
       if (error) throw error;
+      
+      if (!data || data.length === 0) {
+        throw new Error('Failed to add allergy');
+      }
       
       // Update local state with the new allergy item
       const newAllergyItem = {
@@ -293,10 +365,20 @@ export default function ProfilePage() {
 
   const deleteMedicalHistory = async (id: string) => {
     try {
+      // Show saving state
+      setSaving(true);
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setMessage({ text: 'You must be logged in to delete records', type: 'error' });
+        return;
+      }
+      
       const { error } = await supabase
         .from('medical_history')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', session.user.id); // Extra security check
 
       if (error) throw error;
       
@@ -311,6 +393,7 @@ export default function ProfilePage() {
       console.error('Error deleting medical history:', error);
       setMessage({ text: 'Failed to delete medical history', type: 'error' });
     } finally {
+      setSaving(false);
       // Clear message after a delay
       setTimeout(() => setMessage(null), 5000);
     }
@@ -318,10 +401,20 @@ export default function ProfilePage() {
 
   const deleteAllergy = async (id: string) => {
     try {
+      // Show saving state
+      setSaving(true);
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        setMessage({ text: 'You must be logged in to delete records', type: 'error' });
+        return;
+      }
+      
       const { error } = await supabase
         .from('allergies')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('user_id', session.user.id); // Extra security check
 
       if (error) throw error;
       
@@ -336,6 +429,7 @@ export default function ProfilePage() {
       console.error('Error deleting allergy:', error);
       setMessage({ text: 'Failed to delete allergy', type: 'error' });
     } finally {
+      setSaving(false);
       // Clear message after a delay
       setTimeout(() => setMessage(null), 5000);
     }
