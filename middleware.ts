@@ -4,6 +4,8 @@ import type { NextRequest } from 'next/server';
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next();
+  
+  // Create the supabase middleware client
   const supabase = createMiddlewareClient({ req, res });
   
   // Refresh session if it exists
