@@ -5,6 +5,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './dashboard.module.css';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function DashboardLayout({
   children,
@@ -47,6 +48,7 @@ export default function DashboardLayout({
 
   return (
     <div className={styles.dashboardContainer}>
+      <ThemeToggle />
       <header className={styles.header}>
         <div className={styles.headerContent}>
           <Link href="/dashboard">

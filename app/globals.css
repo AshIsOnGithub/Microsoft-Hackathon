@@ -1,4 +1,5 @@
 :root {
+  /* Light mode */
   --primary-blue: #1E88E5;
   --secondary-blue: #90CAF9;
   --dark-blue: #1565C0;
@@ -9,6 +10,31 @@
   --text-grey: #757575;
   --error-red: #E53935;
   --success-green: #43A047;
+  --bg-primary: var(--white);
+  --bg-secondary: var(--off-white);
+  --bg-accent: var(--accent-sky-blue);
+  --text-primary: var(--text-black);
+  --text-secondary: var(--text-grey);
+  --shadow: rgba(0, 0, 0, 0.1);
+  --card-bg: var(--off-white);
+  --footer-bg: var(--dark-blue);
+  --hero-bg: var(--accent-sky-blue);
+}
+
+[data-theme='dark'] {
+  --primary-blue: #1E88E5;
+  --secondary-blue: #64B5F6;
+  --dark-blue: #1976D2;
+  --accent-sky-blue: #0D47A1;
+  --bg-primary: #121212;
+  --bg-secondary: #1E1E1E;
+  --bg-accent: #0D47A1;
+  --text-primary: #F5F5F5;
+  --text-secondary: #BDBDBD;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --card-bg: #1E1E1E;
+  --footer-bg: #0A1929;
+  --hero-bg: #0A1929;
 }
 
 * {
@@ -22,9 +48,10 @@ body {
   max-width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;
-  color: var(--text-black);
-  background-color: var(--white);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
   font-family: 'Inter', 'Roboto', 'SF Pro', sans-serif;
+  transition: all 0.3s ease;
 }
 
 a {
@@ -36,15 +63,18 @@ button, .button {
   background-color: var(--primary-blue);
   color: var(--white);
   border: none;
-  border-radius: 4px;
-  padding: 10px 16px;
+  border-radius: 8px;
+  padding: 12px 20px;
   font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 button:hover, .button:hover {
   background-color: var(--dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 .button-secondary {
@@ -54,27 +84,34 @@ button:hover, .button:hover {
 }
 
 .button-secondary:hover {
-  background-color: var(--accent-sky-blue);
+  background-color: var(--bg-accent);
+  color: var(--white);
+  border-color: transparent;
 }
 
 input, textarea, select {
   padding: 10px;
-  border: 1px solid var(--text-grey);
-  border-radius: 4px;
+  border: 1px solid var(--text-secondary);
+  border-radius: 8px;
   width: 100%;
   font-size: 16px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
 input:focus, textarea:focus, select:focus {
   outline: none;
   border-color: var(--primary-blue);
+  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.2);
 }
 
 .card {
-  background-color: var(--off-white);
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--card-bg);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 20px var(--shadow);
+  transition: all 0.3s ease;
 }
 
 .container {
@@ -91,6 +128,7 @@ input:focus, textarea:focus, select:focus {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
+  color: var(--text-primary);
 }
 
 .error-text {
@@ -103,4 +141,28 @@ input:focus, textarea:focus, select:focus {
   color: var(--success-green);
   font-size: 14px;
   margin-top: 4px;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  background-color: var(--card-bg);
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 4px 12px var(--shadow);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.theme-toggle:hover {
+  transform: rotate(30deg);
 } 

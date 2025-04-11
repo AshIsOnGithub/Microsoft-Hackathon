@@ -2,30 +2,38 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: var(--bg-primary);
+  position: relative;
 }
 
 .header {
-  background-color: var(--white);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--card-bg);
+  box-shadow: 0 4px 12px var(--shadow);
   position: sticky;
   top: 0;
   z-index: 10;
+  transition: all 0.3s ease;
 }
 
 .headerContent {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 20px;
+  padding: 16px 20px;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
 
 .logo {
-  color: var(--dark-blue);
+  color: var(--primary-blue);
   font-size: 1.8rem;
   margin: 0;
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--primary-blue), var(--dark-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .nav {
@@ -34,11 +42,12 @@
 }
 
 .navLink {
-  color: var(--text-black);
+  color: var(--text-primary);
   text-decoration: none;
   font-weight: 500;
-  padding: 5px 0;
+  padding: 8px 0;
   position: relative;
+  transition: all 0.3s ease;
 }
 
 .navLink:after {
@@ -52,8 +61,13 @@
   transition: width 0.3s ease;
 }
 
-.navLink:hover:after {
+.navLink:hover:after,
+.navLink.active:after {
   width: 100%;
+}
+
+.navLink:hover {
+  color: var(--primary-blue);
 }
 
 .headerRight {
@@ -63,32 +77,35 @@
 
 .signOutButton {
   background-color: transparent;
-  color: var(--text-grey);
-  border: 1px solid var(--text-grey);
+  color: var(--text-secondary);
+  border: 1px solid var(--text-secondary);
   padding: 8px 16px;
-  border-radius: 4px;
+  border-radius: 50px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .signOutButton:hover {
   background-color: var(--primary-blue);
   color: var(--white);
   border-color: var(--primary-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
 }
 
 .main {
   flex: 1;
-  padding: 30px 20px;
-  background-color: var(--off-white);
+  padding: 40px 20px;
+  background-color: var(--bg-primary);
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
 }
 
 .footer {
-  background-color: var(--white);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background-color: var(--card-bg);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: 20px;
   margin-top: auto;
 }
@@ -97,7 +114,7 @@
   max-width: 1200px;
   margin: 0 auto;
   text-align: center;
-  color: var(--text-grey);
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -107,13 +124,13 @@
   align-items: center;
   height: 100vh;
   width: 100%;
-  background-color: var(--off-white);
+  background-color: var(--bg-primary);
 }
 
 .loadingSpinner {
   width: 50px;
   height: 50px;
-  border: 5px solid rgba(0, 0, 0, 0.1);
+  border: 5px solid rgba(30, 136, 229, 0.1);
   border-radius: 50%;
   border-top-color: var(--primary-blue);
   animation: spin 1s ease-in-out infinite;
@@ -133,6 +150,9 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 0 20px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
 }
 
 .welcomeSection {
@@ -143,6 +163,30 @@
   text-align: center;
   box-shadow: 0 4px 12px rgba(21, 101, 192, 0.1);
   border: 1px solid rgba(144, 202, 249, 0.5);
+  background-color: var(--bg-accent);
+  padding: 40px;
+  border-radius: 16px;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 30px var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.welcomeSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at 20% 30%, rgba(30, 136, 229, 0.15) 0%, transparent 40%), 
+                    radial-gradient(circle at 80% 70%, rgba(30, 136, 229, 0.1) 0%, transparent 40%);
+  z-index: 1;
+}
+
+.welcomeSection > * {
+  position: relative;
+  z-index: 2;
 }
 
 .welcomeTitle {
@@ -157,6 +201,10 @@
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
+  color: var(--white);
+  margin-bottom: 15px;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .symptomChecker {
@@ -167,6 +215,17 @@
   width: 100%;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: 1px solid rgba(0, 0, 0, 0.05);
+.symptomsCard {
+  background-color: var(--card-bg);
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 30px var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.symptomsCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px var(--shadow);
 }
 
 .symptomChecker:hover {
@@ -288,6 +347,11 @@
 .newCheckButton:hover {
   background-color: var(--primary-blue);
   color: var(--white);
+.cardTitle {
+  color: var(--primary-blue);
+  margin-bottom: 25px;
+  font-size: 1.5rem;
+  font-weight: 600;
 }
 
 .resultSection {
@@ -343,6 +407,9 @@
   font-size: 1.1rem;
   color: var(--dark-blue);
   margin-bottom: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 40px;
+  margin-top: 40px;
 }
 
 .conditionDescription {
@@ -357,9 +424,25 @@
   color: var(--primary-blue);
   font-size: 0.9rem;
   font-weight: 500;
+  padding: 14px 28px;
+  font-size: 1.1rem;
   text-decoration: none;
   margin-top: 8px;
   transition: color 0.3s ease;
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+  text-align: center;
+}
+
+.checkButton:hover {
+  background-color: var(--dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
 }
 
 .nhsLink:hover {
@@ -507,6 +590,7 @@
 
 .footerLink {
   color: var(--primary-blue);
+  padding: 12px 24px;
   text-decoration: none;
   font-size: 0.95rem;
   padding: 8px 15px;
@@ -526,6 +610,20 @@
   color: var(--text-grey);
   font-size: 0.8rem;
   opacity: 0.5;
+  background-color: transparent;
+  color: var(--primary-blue);
+  border: 1px solid var(--primary-blue);
+  border-radius: 50px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.secondaryButton:hover {
+  background-color: var(--bg-accent);
+  color: var(--white);
+  border-color: transparent;
+  transform: translateY(-2px);
 }
 
 /* Responsive styles */
@@ -1046,5 +1144,13 @@
     width: 34px;
     height: 34px;
     padding: 6px;
+  }
+
+  .welcomeSection {
+    padding: 30px;
+  }
+
+  .symptomsCard {
+    padding: 30px;
   }
 } 

@@ -40,13 +40,13 @@ export default function SignIn() {
 
   return (
     <div>
-      <h2 className={styles.formTitle}>Sign In</h2>
+      <h2 className={styles.formTitle}>Welcome Back</h2>
       
       <form onSubmit={handleSignIn}>
         {error && <div className={styles.errorMessage}>{error}</div>}
         
         <div className={styles.formGroup}>
-          <label htmlFor="email" className={styles.formLabel}>Email</label>
+          <label htmlFor="email" className={styles.formLabel}>Email Address</label>
           <input
             id="email"
             type="email"
@@ -79,6 +79,8 @@ export default function SignIn() {
           {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
+      
+      <div className={styles.separator}>or</div>
       
       <div className={styles.formFooter}>
         Don't have an account?{' '}
