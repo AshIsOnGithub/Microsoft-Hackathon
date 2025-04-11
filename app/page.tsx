@@ -1,58 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './page.module.css';
+import ThemeToggle from './components/ThemeToggle';
 
 export default function Home() {
-  const [theme, setTheme] = useState('light');
-
-  // Initialize theme from localStorage or system preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-      document.documentElement.setAttribute('data-theme', 'dark');
-    }
-  }, []);
-
-  // Toggle theme function
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('theme', newTheme);
-  };
-
   return (
     <div className={styles.landing}>
-      <button 
-        className="theme-toggle" 
-        onClick={toggleTheme} 
-        aria-label="Toggle light/dark mode"
-      >
-        {theme === 'light' ? (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-          </svg>
-        ) : (
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="4"></circle>
-            <path d="M12 2v2"></path>
-            <path d="M12 20v2"></path>
-            <path d="m4.93 4.93 1.41 1.41"></path>
-            <path d="m17.66 17.66 1.41 1.41"></path>
-            <path d="M2 12h2"></path>
-            <path d="M20 12h2"></path>
-            <path d="m6.34 17.66-1.41 1.41"></path>
-            <path d="m19.07 4.93-1.41 1.41"></path>
-          </svg>
-        )}
-      </button>
+      <ThemeToggle />
 
       <div className={styles.heroSection}>
         <div className={styles.container}>
@@ -211,43 +168,6 @@ export default function Home() {
           </Link>
         </div>
       </div>
-
-      <footer className={styles.footer}>
-        <div className={styles.container}>
-          <div className={styles.footerGrid}>
-            <div className={styles.footerBrand}>
-              <h3>SympCheck</h3>
-              <p>Stress-free care starts here.</p>
-            </div>
-            
-            <div className={styles.footerNav}>
-              <h4>Company</h4>
-              <Link href="/about">About Us</Link>
-              <Link href="/contact">Contact</Link>
-              <Link href="/team">Our Team</Link>
-            </div>
-            
-            <div className={styles.footerNav}>
-              <h4>Legal</h4>
-              <Link href="/privacy">Privacy Policy</Link>
-              <Link href="/terms">Terms of Use</Link>
-            </div>
-            
-            <div className={styles.footerNav}>
-              <h4>Resources</h4>
-              <Link href="/faq">FAQs</Link>
-              <Link href="/blog">Health Blog</Link>
-            </div>
-          </div>
-          
-          <div className={styles.footerDivider}></div>
-          
-          <div className={styles.footerCopyright}>
-            <p>&copy; {new Date().getFullYear()} SympCheck. All rights reserved.</p>
-            <p>SympCheck is not a replacement for professional medical advice.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 } 

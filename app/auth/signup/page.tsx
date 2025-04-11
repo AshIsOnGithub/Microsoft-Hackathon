@@ -57,14 +57,14 @@ export default function SignUp() {
 
   return (
     <div>
-      <h2 className={styles.formTitle}>Create an Account</h2>
+      <h2 className={styles.formTitle}>Create Your Account</h2>
       
       <form onSubmit={handleSignUp}>
         {error && <div className={styles.errorMessage}>{error}</div>}
         {message && <div className={styles.successMessage}>{message}</div>}
         
         <div className={styles.formGroup}>
-          <label htmlFor="email" className={styles.formLabel}>Email</label>
+          <label htmlFor="email" className={styles.formLabel}>Email Address</label>
           <input
             id="email"
             type="email"
@@ -87,6 +87,7 @@ export default function SignUp() {
             className={styles.formInput}
             placeholder="••••••••"
           />
+          <p className={styles.passwordHint}>At least 6 characters</p>
         </div>
         
         <div className={styles.formGroup}>
@@ -103,9 +104,11 @@ export default function SignUp() {
         </div>
         
         <button type="submit" className={styles.submitButton} disabled={loading}>
-          {loading ? 'Creating account...' : 'Sign Up'}
+          {loading ? 'Creating account...' : 'Create Account'}
         </button>
       </form>
+      
+      <div className={styles.separator}>or</div>
       
       <div className={styles.formFooter}>
         Already have an account?{' '}
