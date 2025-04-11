@@ -61,6 +61,11 @@ export default function ProfilePage() {
   
   const supabase = createClientComponentClient();
 
+  // Add QR code state
+  const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [sharingQrCode, setSharingQrCode] = useState(false);
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -446,6 +451,54 @@ export default function ProfilePage() {
     }
   };
 
+  // Add this function to generate a QR code for the profile
+  const generateProfileQrCode = async () => {
+    try {
+      setSharingQrCode(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        setMessage({ text: 'You must be logged in to share your profile', type: 'error' });
+        return;
+      }
+      
+      const userId = session.user.id;
+      // Use the production URL instead of window.location.origin
+      const profileUrl = `https://microsoft-hackathon-blond.vercel.app/profile/${userId}`;
+      
+      // Call QR code API
+      const response = await fetch('/api/generate-qr-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          url: profileUrl,
+          name: profile.fullName || 'Medical Profile'
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to generate QR code');
+      }
+      
+      const data = await response.json();
+      
+      setQrCodeUrl(data.qrCodeUrl);
+      setShowQrCode(true);
+    } catch (error) {
+      console.error('Error generating QR code:', error);
+      setMessage({ text: 'Failed to generate QR code', type: 'error' });
+    } finally {
+      setSharingQrCode(false);
+    }
+  };
+
+  // Add this function to close the QR code modal
+  const closeQrCode = () => {
+    setShowQrCode(false);
+  };
+
   if (loading) {
     return (
       <div className={styles.loadingContainer}>
@@ -818,6 +871,79 @@ export default function ProfilePage() {
               ))}
             </div>
           }
+        </div>
+      )}
+
+      {/* QR Code Button */}
+      <div className={styles.shareSection}>
+        <div className={styles.card}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Share Your Medical Profile</h2>
+          </div>
+          <p className={styles.shareDescription}>
+            Generate a QR code to share your medical profile with healthcare providers.
+            They can scan this code to quickly access your important medical information.
+          </p>
+          <div className={styles.buttonGroup}>
+            <button 
+              className={styles.shareButton} 
+              onClick={generateProfileQrCode}
+              disabled={sharingQrCode || !profile.fullName}
+            >
+              {sharingQrCode ? (
+                <>
+                  <div className={styles.buttonSpinner}></div>
+                  Generating QR Code...
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                  Generate QR Code
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* QR Code Modal */}
+      {showQrCode && (
+        <div className={styles.modalOverlay} onClick={closeQrCode}>
+          <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <button className={styles.closeButton} onClick={closeQrCode}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <h2>Share Your Medical Profile</h2>
+            <div className={styles.qrCodeContainer}>
+              <img src={qrCodeUrl} alt="Profile QR Code" className={styles.qrCodeImage} />
+            </div>
+            <p className={styles.qrInstructions}>
+              Scan this QR code to access your medical profile information.
+              Healthcare providers can use this to quickly view your medical details.
+            </p>
+            <div className={styles.downloadButtonContainer}>
+              <a 
+                href={qrCodeUrl} 
+                download={`${profile.fullName.replace(/\s+/g, '-')}-medical-profile-qr.svg`}
+                className={styles.downloadButton}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download QR Code
+              </a>
+            </div>
+          </div>
         </div>
       )}
     </div>

@@ -448,4 +448,149 @@
   .activeTab::after {
     height: 0;
   }
+}
+
+/* Share Section Styles */
+.shareSection {
+  margin-top: 40px;
+  margin-bottom: 60px;
+}
+
+.shareDescription {
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.shareButton {
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+}
+
+.shareButton:hover {
+  background-color: var(--dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
+}
+
+.shareButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* QR Code Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modalContent {
+  background-color: var(--card-bg);
+  border-radius: 20px;
+  padding: 30px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+  text-align: center;
+}
+
+.modalContent h2 {
+  color: var(--text-primary);
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+}
+
+.closeButton {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--text-primary);
+}
+
+.qrCodeContainer {
+  background-color: white;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 0 auto 20px;
+  width: fit-content;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.qrCodeImage {
+  width: 220px;
+  height: 220px;
+  display: block;
+}
+
+.qrInstructions {
+  color: var(--text-secondary);
+  margin-bottom: 25px;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+.downloadButtonContainer {
+  margin-top: 15px;
+}
+
+.downloadButton {
+  background-color: var(--primary-blue);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(30, 136, 229, 0.3);
+}
+
+.downloadButton:hover {
+  background-color: var(--dark-blue);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(30, 136, 229, 0.4);
 } 

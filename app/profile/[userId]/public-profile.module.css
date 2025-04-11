@@ -1,0 +1,417 @@
+:root {
+  --primary-blue: #1E88E5;
+  --dark-blue: #1565C0;
+  --light-blue: #E3F2FD;
+  --success-green: #43A047;
+  --error-red: #E53935;
+  --warning-orange: #FB8C00;
+  --text-primary: #263238;
+  --text-secondary: #607D8B;
+  --text-light: #B0BEC5;
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #EEF2F6;
+  --card-bg: #FFFFFF;
+  --shadow: rgba(0, 0, 0, 0.05);
+  --divider: #E0E0E0;
+}
+
+.publicProfileContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.headerBanner {
+  background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+  padding: 30px 0;
+  text-align: center;
+  border-radius: 15px 15px 0 0;
+  margin-bottom: 0;
+  box-shadow: 0 5px 20px rgba(21, 101, 192, 0.3);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logoContainer {
+  margin-bottom: 10px;
+}
+
+.logoText {
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.pageTitle {
+  color: white;
+  font-size: 2rem;
+  margin: 0 0 5px 0;
+}
+
+.headerSubtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.contentContainer {
+  margin-top: -20px;
+  padding-bottom: 40px;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border-radius: 0 0 15px 15px;
+  padding: 30px;
+  box-shadow: 0 10px 30px var(--shadow);
+  margin-bottom: 20px;
+}
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--divider);
+  position: relative;
+}
+
+.avatarCircle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0 4px 15px rgba(30, 136, 229, 0.3);
+}
+
+.profileBasicInfo {
+  flex: 1;
+}
+
+.profileBasicInfo h2 {
+  margin: 0 0 5px 0;
+  color: var(--text-primary);
+  font-size: 1.8rem;
+}
+
+.demographicsInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.demographicItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.demographicItem svg {
+  color: var(--primary-blue);
+  opacity: 0.8;
+}
+
+.infoSection {
+  margin-bottom: 30px;
+}
+
+.sectionTitle {
+  color: var(--primary-blue);
+  font-size: 1.3rem;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--light-blue);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sectionTitle svg {
+  color: var(--primary-blue);
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.infoItem {
+  margin-bottom: 15px;
+}
+
+.infoLabel {
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+}
+
+.infoValue {
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+
+.allergiesList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.allergyCard {
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 5px var(--shadow);
+  border-left: 4px solid var(--primary-blue);
+}
+
+.allergyTitleContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.allergyName {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.severityBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.severityMild {
+  background-color: rgba(67, 160, 71, 0.1);
+  color: var(--success-green);
+}
+
+.severityModerate {
+  background-color: rgba(251, 140, 0, 0.1);
+  color: var(--warning-orange);
+}
+
+.severitySevere {
+  background-color: rgba(229, 57, 53, 0.1);
+  color: var(--error-red);
+}
+
+.allergyReaction {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.medicalHistoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.historyCard {
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 5px var(--shadow);
+  border-left: 4px solid var(--primary-blue);
+}
+
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.historyCondition {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.historyCondition svg {
+  color: var(--primary-blue);
+}
+
+.historyDate {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.historyNotes {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border-top: 1px dashed var(--divider);
+  padding-top: 10px;
+}
+
+.historyNotes p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.emptyState {
+  color: var(--text-light);
+  font-style: italic;
+  text-align: center;
+  padding: 25px;
+  background-color: var(--bg-secondary);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.emptyState svg {
+  color: var(--text-light);
+  opacity: 0.5;
+}
+
+.emptyState p {
+  margin: 0;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 20px;
+  color: var(--text-secondary);
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(30, 136, 229, 0.1);
+  border-radius: 50%;
+  border-top-color: var(--primary-blue);
+  animation: spin 1s ease-in-out infinite;
+}
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.errorIcon {
+  color: var(--error-red);
+  margin-bottom: 20px;
+}
+
+.errorContainer h2 {
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.disclaimerFooter {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.emergencyTag {
+  position: absolute;
+  top: -15px;
+  right: 0;
+  background-color: var(--primary-blue);
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 5px 15px;
+  border-radius: 30px;
+  box-shadow: 0 3px 10px rgba(21, 101, 192, 0.2);
+}
+
+.poweredBy {
+  margin-top: 15px;
+  font-size: 0.8rem;
+}
+
+.poweredBy a {
+  color: var(--primary-blue);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.poweredBy a:hover {
+  text-decoration: underline;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .infoGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .allergiesList {
+    grid-template-columns: 1fr;
+  }
+  
+  .profileHeader {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .headerBanner {
+    padding: 20px 0;
+  }
+  
+  .card {
+    padding: 20px;
+  }
+  
+  .profileBasicInfo h2 {
+    font-size: 1.5rem;
+  }
+  
+  .pageTitle {
+    font-size: 1.8rem;
+  }
+} 
