@@ -1,10 +1,60 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../lib/ThemeProvider';
 
+// Define the type for ThemeContext
+type ThemeContextType = {
+  theme: string;
+  toggleTheme: () => void;
+};
+
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
+  // Fallback state for when the component is used outside ThemeProvider
+  const [localTheme, setLocalTheme] = useState('light');
+  const [mounted, setMounted] = useState(false);
+
+  // Try to use the ThemeProvider context, but don't throw if it's unavailable
+  let themeContext: ThemeContextType | undefined;
+  try {
+    themeContext = useTheme();
+  } catch (error) {
+    // ThemeProvider not available, we'll use local state
+  }
+  
+  // Initialize theme from localStorage or system preference when using local state
+  useEffect(() => {
+    setMounted(true);
+    if (!themeContext) {
+      const savedTheme = localStorage?.getItem('theme');
+      if (savedTheme) {
+        setLocalTheme(savedTheme);
+      } else if (window?.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        setLocalTheme('dark');
+      }
+    }
+  }, [themeContext]);
+
+  // Local theme toggle function
+  const toggleLocalTheme = () => {
+    const newTheme = localTheme === 'light' ? 'dark' : 'light';
+    setLocalTheme(newTheme);
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', newTheme);
+    }
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('theme', newTheme);
+    }
+  };
+
+  // Use context values if available, otherwise use local state
+  const theme = themeContext?.theme || localTheme;
+  const toggleTheme = themeContext?.toggleTheme || toggleLocalTheme;
+
+  // Prevent hydration mismatch
+  if (!mounted && !themeContext) {
+    return null;
+  }
 
   return (
     <button 
