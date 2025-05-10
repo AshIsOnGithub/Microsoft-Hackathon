@@ -59,7 +59,10 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [activeTab, setActiveTab] = useState<'profile' | 'medical' | 'allergies'>('profile');
   
-  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  // Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
   // Add QR code state
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');

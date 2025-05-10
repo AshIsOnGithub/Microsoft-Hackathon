@@ -20,7 +20,10 @@ export default function HistoryPage() {
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [user, setUser] = useState<any>(null);
   
-  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  // Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
   
   useEffect(() => {
     const getUser = async () => {

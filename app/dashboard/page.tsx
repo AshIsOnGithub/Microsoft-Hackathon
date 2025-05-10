@@ -31,7 +31,10 @@ export default function Dashboard() {
   ]);
   const [error, setError] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
-  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+  // Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
   
   // Speech recognition states
   const [isListening, setIsListening] = useState(false);
