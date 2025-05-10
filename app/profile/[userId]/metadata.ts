@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 type Props = {
@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     // Create Supabase server client
-    const supabase = createServerComponentClient({ cookies });
+    const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, { cookies });
     
     // Fetch basic profile data for title
     const { data: profileData } = await supabase

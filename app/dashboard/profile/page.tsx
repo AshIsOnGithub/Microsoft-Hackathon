@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createBrowserClient } from '@supabase/ssr';
 import styles from './profile.module.css';
 
 interface MedicalHistory {
@@ -59,7 +59,7 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [activeTab, setActiveTab] = useState<'profile' | 'medical' | 'allergies'>('profile');
   
-  const supabase = createClientComponentClient();
+  const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
   // Add QR code state
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
