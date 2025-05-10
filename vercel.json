@@ -4,10 +4,10 @@
   "outputDirectory": ".next",
   "installCommand": "npm install",
   "functions": {
-    "api/**/*.js": {
+    ".next/server/app/**/*.js": {
       "maxDuration": 10
     },
-    "pages/**/*.js": {
+    ".next/server/pages/**/*.js": {
       "maxDuration": 10
     }
   }
