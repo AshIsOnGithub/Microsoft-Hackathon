@@ -10,11 +10,24 @@ export async function middleware(req: NextRequest) {
   
   const res = NextResponse.next();
   
-  // Create the supabase middleware client
-  const supabase = createMiddlewareClient({ req, res });
-  
-  // Refresh session if it exists
-  await supabase.auth.getSession();
+  try {
+    // Create the supabase middleware client
+    const supabase = createMiddlewareClient({ req, res });
+    
+    // Set a timeout for the Supabase call
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Auth session timeout')), 2000)
+    );
+    
+    // Refresh session if it exists with timeout
+    await Promise.race([
+      supabase.auth.getSession(),
+      timeoutPromise
+    ]);
+  } catch (error) {
+    console.error('Middleware error:', error);
+    // Continue even if session refresh fails
+  }
   
   return res;
 }
@@ -27,7 +40,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public (public files)
+     * - api (API routes)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public|api).*)',
   ],
 }; 
