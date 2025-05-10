@@ -13,8 +13,11 @@ function updateFile(filePath) {
   try {
     let content = fs.readFileSync(filePath, 'utf8');
     
+    // Check if it's a client component
+    const isClientComponent = content.includes("'use client'");
+    
     // Replace the imports
-    const newContent = content
+    let newContent = content
       .replace(
         "import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';", 
         "import { createBrowserClient } from '@supabase/ssr';"
@@ -22,19 +25,41 @@ function updateFile(filePath) {
       .replace(
         "import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';",
         "import { createServerClient } from '@supabase/ssr';"
-      )
-      .replace(
-        /const supabase = createClientComponentClient\(\);/g,
-        "const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);"
-      )
-      .replace(
-        /const supabase = createClientComponentClient\(\{ cookies: cookies \}\);/g,
-        "const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);"
-      )
-      .replace(
-        /const supabase = createServerComponentClient\(\{ cookies \}\);/g,
-        "const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, { cookies });"
       );
+    
+    // Fix client component Supabase initialization
+    if (isClientComponent) {
+      newContent = newContent
+        .replace(
+          /const supabase = createBrowserClient\(process\.env\.NEXT_PUBLIC_SUPABASE_URL, process\.env\.NEXT_PUBLIC_SUPABASE_ANON_KEY\);/g,
+          `// Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);`
+        )
+        .replace(
+          /const supabase = createClientComponentClient\(\);/g,
+          `// Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);`
+        );
+    } else {
+      // Server component replacements
+      newContent = newContent
+        .replace(
+          /const supabase = createClientComponentClient\(\);/g,
+          "const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);"
+        )
+        .replace(
+          /const supabase = createClientComponentClient\(\{ cookies: cookies \}\);/g,
+          "const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);"
+        )
+        .replace(
+          /const supabase = createServerComponentClient\(\{ cookies \}\);/g,
+          "const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, { cookies });"
+        );
+    }
     
     // Only write to the file if changes were made
     if (content !== newContent) {
