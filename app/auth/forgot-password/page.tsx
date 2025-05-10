@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
 import styles from '../auth.module.css';
+import { supabaseUrl, supabaseAnonKey } from '../../config';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');

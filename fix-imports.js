@@ -29,20 +29,33 @@ function updateFile(filePath) {
     
     // Fix client component Supabase initialization
     if (isClientComponent) {
+      // Add config import if not already present
+      if (!newContent.includes("import { supabaseUrl, supabaseAnonKey }")) {
+        // Find the last import statement
+        const importRegex = /^import.*from.*$/gm;
+        const imports = [...newContent.matchAll(importRegex)];
+        
+        if (imports.length > 0) {
+          const lastImport = imports[imports.length - 1][0];
+          const lastImportIndex = newContent.indexOf(lastImport) + lastImport.length;
+          
+          // Insert the config import after the last import
+          newContent = 
+            newContent.slice(0, lastImportIndex) + 
+            "\nimport { supabaseUrl, supabaseAnonKey } from '../../config';" + 
+            newContent.slice(lastImportIndex);
+        }
+      }
+      
+      // Replace the client initialization
       newContent = newContent
         .replace(
-          /const supabase = createBrowserClient\(process\.env\.NEXT_PUBLIC_SUPABASE_URL, process\.env\.NEXT_PUBLIC_SUPABASE_ANON_KEY\);/g,
-          `// Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);`
+          /const supabase = createBrowserClient\(.*\);/g,
+          "const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);"
         )
         .replace(
           /const supabase = createClientComponentClient\(\);/g,
-          `// Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);`
+          "const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);"
         );
     } else {
       // Server component replacements

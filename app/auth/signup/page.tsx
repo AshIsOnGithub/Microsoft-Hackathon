@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { createBrowserClient } from '@supabase/ssr';
 import { useRouter } from 'next/navigation';
 import styles from '../auth.module.css';
+import { supabaseUrl, supabaseAnonKey } from '../../config';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -14,9 +15,8 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
-  // Access environment variables with NEXT_PUBLIC prefix which are safe to expose to the browser
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+  
+  // Create Supabase client using the imported config variables
   const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
 
   const handleSignUp = async (e: React.FormEvent) => {
