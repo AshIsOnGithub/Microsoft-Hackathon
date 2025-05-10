@@ -1,0 +1,20 @@
+{
+  "buildCommand": "npm run build",
+  "framework": "nextjs",
+  "outputDirectory": ".next",
+  "installCommand": "npm install",
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@next_public_supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@next_public_supabase_anon_key",
+    "AZURE_SPEECH_KEY": "@azure_speech_key",
+    "AZURE_SPEECH_REGION": "@azure_speech_region",
+    "AZURE_TRANSLATOR_ENDPOINT": "@azure_translator_endpoint",
+    "AZURE_TRANSLATOR_KEY": "@azure_translator_key",
+    "AZURE_TRANSLATOR_REGION": "@azure_translator_region",
+    "NHS_API_SUBSCRIPTION_KEY": "@nhs_api_subscription_key",
+    "NHS_API_SECONDARY_KEY": "@nhs_api_secondary_key",
+    "AZURE_OPENAI_ENDPOINT": "@azure_openai_endpoint",
+    "AZURE_OPENAI_API_KEY": "@azure_openai_api_key",
+    "AZURE_OPENAI_DEPLOYMENT_NAME": "@azure_openai_deployment_name"
+  }
+} 
