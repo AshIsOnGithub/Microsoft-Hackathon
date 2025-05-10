@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import Link from 'next/link';
 import styles from './dashboard.module.css';
+import { supabaseUrl, supabaseAnonKey } from '../../config';
 
 // Add type declaration for Google Maps
 declare global {

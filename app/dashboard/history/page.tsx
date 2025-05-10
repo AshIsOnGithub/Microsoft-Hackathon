@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import Link from 'next/link';
 import styles from './history.module.css';
+import { supabaseUrl, supabaseAnonKey } from '../../config';
 
 interface HistoryItem {
   id: string;

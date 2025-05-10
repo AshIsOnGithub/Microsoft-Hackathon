@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './dashboard.module.css';
 import ThemeToggle from '../components/ThemeToggle';
+import { supabaseUrl, supabaseAnonKey } from '../../config';
 
 export default function DashboardLayout({
   children,

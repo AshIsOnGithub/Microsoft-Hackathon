@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import styles from './profile.module.css';
+import { supabaseUrl, supabaseAnonKey } from '../../config';
 
 interface MedicalHistory {
   id: string;
