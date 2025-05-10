@@ -3,6 +3,11 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export async function middleware(req: NextRequest) {
+  // Handle profile redirect
+  if (req.nextUrl.pathname === '/profile') {
+    return NextResponse.redirect(new URL('/dashboard/profile', req.url));
+  }
+  
   const res = NextResponse.next();
   
   // Create the supabase middleware client
